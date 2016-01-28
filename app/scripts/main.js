@@ -7,9 +7,80 @@
  * to create own renderer later
 */
 
+var googAuth;
+
 $(document).ready(function() {
 	$("#dboxButton").on("click", connectDropbox);
-    $("#gdriveButton").on("click", connectDrive);
+    // $("#gdriveButton").on("click", connectDrive);
+    // Solution is to not have so many callbacks before actually calling window.open. 
+    //If we can reduce the callbacks the window will appear without any issue
+    $("#googleAuthButton").click(function() {
+         authorizeDrive(function(auth) {
+            // Use this button to bind the authorization object
+            googAuth = auth;
+            console.log('Auth set to: ' + auth);
+        });
+    });
+
+    $("#gdriveButton").click(function() {
+        console.log("Checking Auth");
+        console.log(googAuth);
+        if (googAuth.isSignedIn.get()) {
+            loadDriveAPI();
+        } else {
+            console.log("Attempting Sign In");
+            // Need to have them sign in
+            googAuth.signIn().then(function() {
+                loadDriveAPI();
+
+            }, function(error) {
+                // Failed to authenticate for some reason
+                googleAuth.reject(error);
+            });
+        }
+    });
+
+    // Loads the drive API, and resolves the promise
+    function loadDriveAPI() {
+        gapi.client.load('drive', 'v2', function() {
+            // Once this callback is executed, that means we've authorized just as expected
+            // and can therefore resolve the promise
+            connectDrive();
+        });
+    }
+
+    // Directs the client to Google Drive's authentication page to sign in.
+    function connectDrive() {
+        console.log('Attempting to connect');
+        store = "Google Drive";
+
+        console.log('Successful Authentication!');
+        authenticatedClient = gapi.client;
+        constructIMObject(store);
+    }
+
+    // This function returns a promise that handles our authentication
+    function authorizeDrive(next) {
+        console.log("Authorizing Drive");
+      // Your Client ID can be retrieved from your project in the Google
+      // Developer Console, https://console.developers.google.com
+      var CLIENT_ID = '681676105907-omec1itmltlnknrdfo150qcn7pdt95ri.apps.googleusercontent.com';
+      // Need full permissions for everything to work. This is the easiest option
+      var SCOPES = ['https://www.googleapis.com/auth/drive'];
+     
+     
+        // Load the newer version of the API, the old version is a pain to deal with
+        gapi.load('auth2', function() {
+            gapi.auth2.init({
+            'client_id': CLIENT_ID,
+            'scope': SCOPES.join(' '),
+            'immediate': true
+            });
+     
+            next(gapi.auth2.getAuthInstance());
+        });
+    }
+        
 	//initialize context menu
 	$.contextMenu({
             selector: '.context-menu-one', 
@@ -170,70 +241,6 @@ function handleLastNavigated(newMirror) {
     if(lastVisited && lastVisited != "/") {
         constructIMObject(lastVisited, store);
     } 
-}
-
-// Directs the client to Google Drive's authentication page to sign in.
-function connectDrive() {
-    store = "Google Drive";
-    var authenticated = authorizeDrive();
- 
-    authenticated.then(function() {
-        console.log('Successful Authentication!');
-        authenticatedClient = gapi.client;
-        constructIMObject(store);
-    }).fail(function(error) {
-        alert('Uh oh, couldn\'nt autherticate. Check the console for details');
-        console.log(error);
-    });
-}
-
-// This function returns a promise that handles our authentication
-function authorizeDrive() {
-  // Your Client ID can be retrieved from your project in the Google
-  // Developer Console, https://console.developers.google.com
-  var CLIENT_ID = '681676105907-omec1itmltlnknrdfo150qcn7pdt95ri.apps.googleusercontent.com';
-  var auth = $.Deferred();
-  // Need full permissions for everything to work. This is the easiest option
-  var SCOPES = ['https://www.googleapis.com/auth/drive'];
- 
-  checkAuth();
- 
-  function checkAuth() {
-    // Load the newer version of the API, the old version is a pain to deal with
-    gapi.load('auth2', function() {
-        gapi.auth2.init({
-        'client_id': CLIENT_ID,
-        'scope': SCOPES.join(' '),
-        'immediate': true
-        });
- 
-        var googAuth = gapi.auth2.getAuthInstance();
- 
-        if (googAuth.isSignedIn.get()) {
-            loadDriveAPI();
-        } else {
-            // Need to have them sign in
-            googAuth.signIn().then(function() {
-                loadDriveAPI();
-            }, function(error) {
-                // Failed to authenticate for some reason
-                auth.reject(error);
-            });
-        }
-    });
-  }
- 
-  // Loads the drive API, and resolves the promise
-  function loadDriveAPI() {
-    gapi.client.load('drive', 'v2', function() {
-        // Once this callback is executed, that means we've authorized just as expected
-        // and can therefore resolve the promise
-        auth.resolve();
-    });
-  }
- 
-  // Returns the promise object from our deferred object
-  return auth.promise();
 }
 
 // Directs the client to Dropbox's authentication page to sign in.
