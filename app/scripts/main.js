@@ -23,8 +23,7 @@ $(document).ready(function() {
         $(this).html("<img src='./images/spinner.gif' alt='spinner' />");
         setTimeout(function() {
             $("#gdriveButton").remove();
-            $(".jumbotron").append("<button class='btn btn-default' id='gSignInButton'>Now sign in to Google Drive</button>");
-            $("#gSignInButton").html("Now sign in to Google Drive");
+            $("#buttons").append("<button class='btn btn-default' id='gSignInButton'>Sign in to Google Drive</button>");
             $("#gSignInButton").click(function() {
                 $(this).html("<img src='./images/spinner.gif' alt='spinner' />");
                 console.log("Checking Auth");

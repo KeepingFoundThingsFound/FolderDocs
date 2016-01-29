@@ -67,3 +67,8 @@ h3.folder-name {
 .btn {
 	width: 240px;
 }
+
+#help {
+	padding-top: 2em;
+	display: inline-block;
+}
