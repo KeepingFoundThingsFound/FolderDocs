@@ -14,30 +14,37 @@ $(document).ready(function() {
     // $("#gdriveButton").on("click", connectDrive);
     // Solution is to not have so many callbacks before actually calling window.open. 
     //If we can reduce the callbacks the window will appear without any issue
-    $("#googleAuthButton").click(function() {
+    $("#gdriveButton").click(function() {
          authorizeDrive(function(auth) {
             // Use this button to bind the authorization object
             googAuth = auth;
             console.log('Auth set to: ' + auth);
         });
-    });
+        $(this).html("<img src='./images/spinner.gif' alt='spinner' />");
+        setTimeout(function() {
+            $("#gdriveButton").remove();
+            $(".jumbotron").append("<button class='btn btn-default' id='gSignInButton'>Now sign in to Google Drive</button>");
+            $("#gSignInButton").html("Now sign in to Google Drive");
+            $("#gSignInButton").click(function() {
+                $(this).html("<img src='./images/spinner.gif' alt='spinner' />");
+                console.log("Checking Auth");
+                console.log(googAuth);
+                if (googAuth.isSignedIn.get()) {
+                    loadDriveAPI();
+                } else {
+                    console.log("Attempting Sign In");
+                    // Need to have them sign in
+                    googAuth.signIn().then(function() {
+                        loadDriveAPI();
 
-    $("#gdriveButton").click(function() {
-        console.log("Checking Auth");
-        console.log(googAuth);
-        if (googAuth.isSignedIn.get()) {
-            loadDriveAPI();
-        } else {
-            console.log("Attempting Sign In");
-            // Need to have them sign in
-            googAuth.signIn().then(function() {
-                loadDriveAPI();
-
-            }, function(error) {
-                // Failed to authenticate for some reason
-                googleAuth.reject(error);
+                    }, function(error) {
+                        // Failed to authenticate for some reason
+                        googleAuth.reject(error);
+                    });
+                }
             });
-        }
+        }, 1000);
+
     });
 
     // Loads the drive API, and resolves the promise
@@ -256,6 +263,7 @@ function connectDropbox() {
 			} else {
 				authenticatedClient = client;
 				console.log('Dropbox authenticated');
+                $("#dboxButton").html("<img src='./images/spinner.gif' alt='spinner' />");
 				constructIMObject(store);
 			}
 		});
