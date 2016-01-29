@@ -345,12 +345,12 @@ function printAssociations(associationList, div) {
 // Creates the JS click handlers for the various associations and links
 // Also creates the handlers for the textbox editing of associations
 function createClickHandlers() {
-	//handleDisplaytextClicks();
+	handleDisplaytextClicks();
 
-	// $('.assoc-textbox').on('blur', function() {
-	// 	var element = $(this);
-	// 	textboxHandler(element);
-  //   });
+	$('.contenteditable').on('blur', function() {
+		var element = $(this);
+		textboxHandler(element);
+  });
 
 	// $('.assoc-textbox').keypress(function (e) {
 	// 	if(e.which == 13) {
@@ -378,7 +378,7 @@ function createClickHandlers() {
 
 	$("#groupingItems").sortable({
 		cancel: ':input,button,.contenteditable',
-
+    handle: '.sortingHandle',
 		stop: function() {
 			saveOrder();
 		}
@@ -440,25 +440,23 @@ function editboxAssociation(element) {
 		// The clicked element is the currently selected element, let's
 		// toggle into edit
 		var guid = element.attr('data-guid');
-		var textbox = $('#' + guid);
-		$("h4[data-guid='" + guid + "']").show();
-		textbox.show();
-		textbox.putCursorAtEnd();
+		//var textbox = $('#' + guid);
+		$(".contenteditable[data-guid='" + guid + "']").prop('contenteditable', 'true');
+		// textbox.show();
+		// textbox.putCursorAtEnd();
 	}
 }
 
 
 // Handles the showing/hiding/saving functionality of the edit textareas
 function textboxHandler(element) {
-	var guid = element.attr('id');
-	var newText = element.val();
-	$("div[data-guid='" + guid + "'] .assoc-displaytext").html(marked(newText)).show();
+	var guid = element.attr('data-guid');
+	var newText = element.html();
 
-	// Hides the "live preview" header
-	$("h4[data-guid='" + guid + "']").hide();
+  console.log('guid:' + guid);
+  console.log('text:' + newText);
 	im.setAssociationDisplayText(guid, newText);
 	saveMirror();
-  element.hide();
 }
 
 // Saves the current itemMirror object
@@ -571,20 +569,18 @@ function associationMarkup(guid) {
 	var displayTextWithMarkdown = marked(originalDisplayText);
 	var functionCall = "navigateMirror(" + guid + ")";
 	var markup = "<div data-guid='" + guid + "' class='row association-row context-menu-one'>" +
-	"<div class='col-xs-11'>" +
+	
+  // drag icon column
+  "<div class='col-xs-1'>" + 
+  "<div class='sortingHandle'><span class='glyphicon glyphicon-move' /></div>" +
+  "</div>" + 
 
-	// Display preview text
-	"<div data-guid='" + guid + "' class='assoc-displaytext'>" + displayTextWithMarkdown + "</div>" +
-
-	// textarea
-	// "<textarea class='assoc-textbox form-control' rows='3' id='" + guid +
-	// "' style='display:none;'>" + originalDisplayText + "</textarea>" +
-
-"<div contenteditable='true' class='contenteditable'>hihi</div>" +
-	// end main column
+  // content column
+  "<div class='col-xs-10'>" +
+  "<div contenteditable='false' class='contenteditable' data-guid='" + guid + "'>" + originalDisplayText + "</div>" +
 	"</div>" +
 
-	// display icon column
+  // icon column
 	"<div class='col-xs-1'>";
 
 	if(im.isAssociationAssociatedItemGrouping(guid)) {

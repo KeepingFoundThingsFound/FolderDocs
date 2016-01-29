@@ -27,6 +27,11 @@ span.association-grouping, span.association-file {
 	background: #e0e0e0;
 }
 
+.association-row:hover .sortingHandle {
+	visibility: visible;
+	border: 1px dashed white;
+}
+
 input {
 	padding: 0;
 	margin: 0;
@@ -59,3 +64,12 @@ h3.folder-name {
 	margin-top: 30px;
 	text-align: center;
 }
+
+.sortingHandle {
+	visibility: hidden;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	font-size: 13px;
+}
+
