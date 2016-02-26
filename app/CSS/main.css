@@ -73,3 +73,16 @@ h3.folder-name {
 	font-size: 13px;
 }
 
+#gdriveButton {
+	width: 220px;
+}
+
+.btn {
+	width: 240px;
+}
+
+#help {
+	padding-top: 2em;
+	display: inline-block;
+}
+
