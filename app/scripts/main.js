@@ -12,7 +12,7 @@ var googAuth;
 $(document).ready(function() {
 	$("#dboxButton").on("click", connectDropbox);
     // $("#gdriveButton").on("click", connectDrive);
-    // Solution is to not have so many callbacks before actually calling window.open. 
+    // Solution is to not have so many callbacks before actually calling window.open.
     //If we can reduce the callbacks the window will appear without any issue
     $("#gdriveButton").click(function() {
          authorizeDrive(function(auth) {
@@ -73,8 +73,8 @@ $(document).ready(function() {
       var CLIENT_ID = '681676105907-omec1itmltlnknrdfo150qcn7pdt95ri.apps.googleusercontent.com';
       // Need full permissions for everything to work. This is the easiest option
       var SCOPES = ['https://www.googleapis.com/auth/drive'];
-     
-     
+
+
         // Load the newer version of the API, the old version is a pain to deal with
         gapi.load('auth2', function() {
             gapi.auth2.init({
@@ -82,75 +82,75 @@ $(document).ready(function() {
             'scope': SCOPES.join(' '),
             'immediate': true
             });
-     
+
             next(gapi.auth2.getAuthInstance());
         });
     }
-        
-	//initialize context menu
-	$.contextMenu({
-            selector: '.context-menu-one', 
-            items: {
-                "edit": {
-                	name: "Edit DisplayText",
-                	callback: function(e) {
-                		var element = $(this);
-                		selectAssociation(element);
-                		editboxAssociation(element);
-                	}
-                },
-                "open": {
-                	name: "Open Subfolder",
-                	callback: function(e) {
-                		var elementGUID = $(this).attr('data-guid');
-                		if(im.isAssociationAssociatedItemGrouping(elementGUID)) {
-                			navigateMirror(elementGUID);
-                		}
-                	},
-                	// Disabled if the element is a non-grouping item
-                	disabled: function() {return !im.isAssociationAssociatedItemGrouping($(this).attr('data-guid')); }
-                },
-                "copy" : {
-                	name: "Copy",
-                	disabled: true
-                },
-                "moveUp": {
-                	name: "Move Assocition Up",
-                	callback: function(e) {
-                		var element = $(this);
-                		element.prev().before(element);
-                		saveOrder();
-                	},
-                	// Disabled if there is no element before it in the list or if it is a non-grouping item
-                	disabled: function() {return (!$(this).prev()[0] || 
-                		!im.isAssociationAssociatedItemGrouping($(this).attr('data-guid'))); }
-                },
-                "moveDown": {
-                	name: "Move Association Down",
-                	callback: function(e) {
-                		var element = $(this);
-                		element.next().after(element);
-                		saveOrder();
-                	},
-                	// Disabled if there is no element after it in the list or if it is a non-grouping item
-                	disabled: function() {return (!$(this).next()[0] || 
-                		!im.isAssociationAssociatedItemGrouping($(this).attr('data-guid'))); }
-                },
-                "delete": {
-                	name: "Delete",
-                	disabled: true
-                },
-                "sep1": "----------",
-                "openInCloud": {
-                	name: "Open in Cloud Store",
-                	callback: function(e) {
-                        var elementGUID = $(this).attr("data-guid");
-                        var url = im.getPublicURL(elementGUID);
-                        window.open(url);
-                    }
-                }
-            }
-        });
+
+	// //initialize context menu
+	// $.contextMenu({
+  //           selector: '.context-menu-one',
+  //           items: {
+  //               "edit": {
+  //               	name: "Edit DisplayText",
+  //               	callback: function(e) {
+  //               		var element = $(this);
+  //               		selectAssociation(element);
+  //               		editboxAssociation(element);
+  //               	}
+  //               },
+  //               "open": {
+  //               	name: "Open Subfolder",
+  //               	callback: function(e) {
+  //               		var elementGUID = $(this).attr('data-guid');
+  //               		if(im.isAssociationAssociatedItemGrouping(elementGUID)) {
+  //               			navigateMirror(elementGUID);
+  //               		}
+  //               	},
+  //               	// Disabled if the element is a non-grouping item
+  //               	disabled: function() {return !im.isAssociationAssociatedItemGrouping($(this).attr('data-guid')); }
+  //               },
+  //               "copy" : {
+  //               	name: "Copy",
+  //               	disabled: true
+  //               },
+  //               "moveUp": {
+  //               	name: "Move Assocition Up",
+  //               	callback: function(e) {
+  //               		var element = $(this);
+  //               		element.prev().before(element);
+  //               		saveOrder();
+  //               	},
+  //               	// Disabled if there is no element before it in the list or if it is a non-grouping item
+  //               	disabled: function() {return (!$(this).prev()[0] ||
+  //               		!im.isAssociationAssociatedItemGrouping($(this).attr('data-guid'))); }
+  //               },
+  //               "moveDown": {
+  //               	name: "Move Association Down",
+  //               	callback: function(e) {
+  //               		var element = $(this);
+  //               		element.next().after(element);
+  //               		saveOrder();
+  //               	},
+  //               	// Disabled if there is no element after it in the list or if it is a non-grouping item
+  //               	disabled: function() {return (!$(this).next()[0] ||
+  //               		!im.isAssociationAssociatedItemGrouping($(this).attr('data-guid'))); }
+  //               },
+  //               "delete": {
+  //               	name: "Delete",
+  //               	disabled: true
+  //               },
+  //               "sep1": "----------",
+  //               "openInCloud": {
+  //               	name: "Open in Cloud Store",
+  //               	callback: function(e) {
+  //                       var elementGUID = $(this).attr("data-guid");
+  //                       var url = im.getPublicURL(elementGUID);
+  //                       window.open(url);
+  //                   }
+  //               }
+  //           }
+  //       });
 });
 
 var
@@ -237,7 +237,7 @@ function constructIMObject(store) {
 	});
 }
 
-// Called upon the successful (re)authentication of a user. 
+// Called upon the successful (re)authentication of a user.
 function handleLastNavigated(newMirror) {
     rootMirror = newMirror;
 
@@ -246,7 +246,7 @@ function handleLastNavigated(newMirror) {
 
     if(lastVisited && lastVisited != "/") {
         constructIMObject(lastVisited, store);
-    } 
+    }
 }
 
 // Directs the client to Dropbox's authentication page to sign in.
@@ -354,23 +354,23 @@ function printAssociations(associationList, div) {
 function createClickHandlers() {
 	handleDisplaytextClicks();
 
-	$('.assoc-textbox').on('blur', function() {
+	$('.contenteditable').on('blur', function() {
 		var element = $(this);
 		textboxHandler(element);
-    });
+  });
 
-	$('.assoc-textbox').keypress(function (e) {
-		if(e.which == 13) {
-			var element = $(this);
-			textboxHandler(element);
-		}
-	});
+	// $('.assoc-textbox').keypress(function (e) {
+	// 	if(e.which == 13) {
+	// 		var element = $(this);
+	// 		textboxHandler(element);
+	// 	}
+	// });
 
-	$('.assoc-textbox').live('keyup', function(e) {
-		var guid = $(this).attr('id');
-		var newText = $(this).val();
-		$("div[data-guid='" + guid + "'] .assoc-displaytext").html(marked(newText));
-	});
+	// $('.assoc-textbox').live('keyup', function(e) {
+	// 	var guid = $(this).attr('id');
+	// 	var newText = $(this).val();
+	// 	$("div[data-guid='" + guid + "'] .assoc-displaytext").html(marked(newText));
+	// });
 
     $('.glyphicon-folder-open').on('click', function(e) {
         var guid = $(this).attr("data-guid");
@@ -384,10 +384,12 @@ function createClickHandlers() {
     });
 
 	$("#groupingItems").sortable({
-		// placeholder: "drop-placeholder",
+		cancel: ':input,button,.contenteditable',
+    handle: '.sortingHandle',
 		stop: function() {
 			saveOrder();
 		}
+
 	});
 
 	$("#previous-link").on("click", navigatePrevious);
@@ -428,7 +430,7 @@ function handleDisplaytextClicks() {
 		 });
 	}
 
-// Selects an itemMirror associaton 
+// Selects an itemMirror associaton
 function selectAssociation(element) {
 	if(selectedAssociation) {
 		selectedAssociation.removeClass('selected-association');
@@ -445,25 +447,23 @@ function editboxAssociation(element) {
 		// The clicked element is the currently selected element, let's
 		// toggle into edit
 		var guid = element.attr('data-guid');
-		var textbox = $('#' + guid);
-		$("h4[data-guid='" + guid + "']").show();
-		textbox.show();
-		textbox.putCursorAtEnd();
+		//var textbox = $('#' + guid);
+		$(".contenteditable[data-guid='" + guid + "']").prop('contenteditable', 'true');
+		// textbox.show();
+		// textbox.putCursorAtEnd();
 	}
 }
 
 
 // Handles the showing/hiding/saving functionality of the edit textareas
 function textboxHandler(element) {
-	var guid = element.attr('id');
-	var newText = element.val();
-	$("div[data-guid='" + guid + "'] .assoc-displaytext").html(marked(newText)).show();
+	var guid = element.attr('data-guid');
+	var newText = element.html();
 
-	// Hides the "live preview" header
-	$("h4[data-guid='" + guid + "']").hide();
+  console.log('guid:' + guid);
+  console.log('text:' + newText);
 	im.setAssociationDisplayText(guid, newText);
 	saveMirror();
-  element.hide();
 }
 
 // Saves the current itemMirror object
@@ -534,7 +534,7 @@ function printToolbar() {
     $('#button-toolbar').empty();
 
     // Prints the home/root button
-    var homeButton = "<button type='button' class='btn btn-default' id='root-link'>" 
+    var homeButton = "<button type='button' class='btn btn-default' id='root-link'>"
         + "<span class='glyphicon glyphicon glyphicon-home'></span> Home</button>";
 
     $('#button-toolbar').append(homeButton);
@@ -576,11 +576,18 @@ function associationMarkup(guid) {
 	var displayTextWithMarkdown = marked(originalDisplayText);
 	var functionCall = "navigateMirror(" + guid + ")";
 	var markup = "<div data-guid='" + guid + "' class='row association-row context-menu-one'>" +
-	"<div class='col-xs-11'><textarea class='assoc-textbox form-control' rows='5' id='" + guid + "' style='display:none;'>" + originalDisplayText
-	+ "</textarea><h4 style='display:none;' data-guid='" + guid + "'>Live preview:</h4>" +
+	
+  // drag icon column
+  "<div class='col-xs-1'>" + 
+  "<div class='sortingHandle'><span class='glyphicon glyphicon-move' /></div>" +
+  "</div>" + 
 
-	// Display text area
-	"<div data-guid='" + guid + "' class='assoc-displaytext'>" + displayTextWithMarkdown + "</div></div>" +
+  // content column
+  "<div class='col-xs-10'>" +
+  "<div contenteditable='false' class='contenteditable' data-guid='" + guid + "'>" + originalDisplayText + "</div>" +
+	"</div>" +
+
+  // icon column
 	"<div class='col-xs-1'>";
 
 	if(im.isAssociationAssociatedItemGrouping(guid)) {

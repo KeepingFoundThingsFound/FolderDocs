@@ -27,6 +27,11 @@ span.association-grouping, span.association-file {
 	background: #e0e0e0;
 }
 
+.association-row:hover .sortingHandle {
+	visibility: visible;
+	border: 1px dashed white;
+}
+
 input {
 	padding: 0;
 	margin: 0;
@@ -60,6 +65,14 @@ h3.folder-name {
 	text-align: center;
 }
 
+.sortingHandle {
+	visibility: hidden;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	font-size: 13px;
+}
+
 #gdriveButton {
 	width: 220px;
 }
@@ -72,3 +85,4 @@ h3.folder-name {
 	padding-top: 2em;
 	display: inline-block;
 }
+
