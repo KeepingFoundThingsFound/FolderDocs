@@ -30,6 +30,7 @@ span.association-grouping, span.association-file {
 .association-row:hover .sortingHandle {
 	visibility: visible;
 	border: 1px dashed white;
+	background: #f6faf9;
 }
 
 input {

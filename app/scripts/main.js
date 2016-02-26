@@ -172,7 +172,7 @@ dropboxClientCredentials = {
 dropboxClient = new Dropbox.Client(dropboxClientCredentials);
 
 dropboxClient.authDriver(new Dropbox.AuthDriver.Popup({
-	receiverUrl: "http://localhost:9000/app/misc/oauth_reciever.html"
+	receiverUrl: config.dropboxURL
 }));
 
 var authenticatedClient = null;
@@ -183,41 +183,14 @@ function getClient() {
 
 // Constructs the root ItemMirror object from the root of the Dropbox.
 function constructIMObject(store) {
-    // Creates utilities depending on what store you're using
- //    console.log(store);
- //    if(store == "dropbox") {
- //    	xooMLUtility = {
- //    		fragmentURI: '/XooML2.xml',
- //    		driverURI: 'DropboxXooMLUtility',
- //    		dropboxClient: dropboxClient
- //    	};
- //    	itemUtility = {
- //    		driverURI: 'DropboxItemUtility',
- //    		dropboxClient: dropboxClient
- //    	};
- //    } else {
- //        xooMLUtility = {
- //            clientInterface: gapi
- //        };
- //        itemUtility = {
- //            clientInterface: gapi
- //        };
- //    };
-	// mirrorSyncUtility = {
-	// 	utilityURI: 'MirrorSyncUtility'
-	// };
-	// var options = {
-	// 	groupingItemURI: pathURI,
-	// 	xooMLDriver: xooMLUtility,
-	// 	itemDriver: itemUtility,
-	// 	syncDriver: mirrorSyncUtility
-	// };
 	im = new ItemMirror("Thisisastring", function(error, newMirror) {
 		if(error) {
 			console.log(error);
 		} else {
 
 			im = newMirror;
+      
+      
             // if(pathURI == "/") {
             //     handleLastNavigated(newMirror);
             // }
@@ -493,7 +466,12 @@ function navigateMirror(guid) {
 
 		if(!error) {
 			im = newMirror;
-            refreshIMDisplay();
+
+      if(!rootMirror) {
+        rootMirror = im; // Save root to be used for home button and root fragment saving
+      }
+
+      refreshIMDisplay();
 		} else {
 			console.log(error);
 		}
@@ -579,7 +557,7 @@ function associationMarkup(guid) {
 	
   // drag icon column
   "<div class='col-xs-1'>" + 
-  "<div class='sortingHandle'><span class='glyphicon glyphicon-move' /></div>" +
+  "<div class='sortingHandle'><span class='glyphicon glyphicon-sort' /></div>" +
   "</div>" + 
 
   // content column
