@@ -9,6 +9,11 @@
 
 var googAuth;
 
+
+
+
+/* BEGIN GOOGLE DRIVE AUTHENTICATION SECTION */
+
 $(document).ready(function() {
 	$("#dboxButton").on("click", connectDropbox);
     // $("#gdriveButton").on("click", connectDrive);
@@ -58,7 +63,7 @@ $(document).ready(function() {
     // Directs the client to Google Drive's authentication page to sign in.
     function connectDrive() {
         console.log('Attempting to connect');
-        store = "Google Drive";
+        var store = "Google Drive";
 
         console.log('Successful Authentication!');
         authenticatedClient = gapi.client;
@@ -153,16 +158,19 @@ $(document).ready(function() {
   //       });
 });
 
+/****************************
+End Google Drive Authentication
+****************************/
+
 var
 	im,
-    store,
-    rootMirror,
+	rootMirror,
 	previous,
 	associations,
 	dropboxClientCredentials,
 	selectedAssociation,
 	dropboxClient,
-    gapi;
+	gapi;
 
 dropboxClientCredentials = {
 	key: config.key,
@@ -181,50 +189,9 @@ function getClient() {
 	return authenticatedClient;
 }
 
-// Constructs the root ItemMirror object from the root of the Dropbox.
-function constructIMObject(store) {
-	im = new ItemMirror("Thisisastring", function(error, newMirror) {
-		if(error) {
-			console.log(error);
-		} else {
-
-			im = newMirror;
-      
-      
-            // if(pathURI == "/") {
-            //     handleLastNavigated(newMirror);
-            // }
-            // Check to see which of the returned items is the correct store, and navigate into that mirror
-            if(store) {
-            	associations = im.listAssociations();
-            	for(var i =0; i < associations.length; i++) {
-            		var displayText = im.getAssociationDisplayText(associations[i]);
-            		if(displayText == store) {
-            			navigateMirror(associations[i]);
-            		}
-            	}
-            } else {
-            	refreshIMDisplay();
-            }
-		}
-	});
-}
-
-// Called upon the successful (re)authentication of a user.
-function handleLastNavigated(newMirror) {
-    rootMirror = newMirror;
-
-    var lastVisited = im.getFragmentNamespaceAttribute('lastVisited', 'folder-docs');
-    console.log("lastVisited: " + lastVisited);
-
-    if(lastVisited && lastVisited != "/") {
-        constructIMObject(lastVisited, store);
-    }
-}
-
 // Directs the client to Dropbox's authentication page to sign in.
 function connectDropbox() {
-    store = "Dropbox";
+	var store = "Dropbox";
 	if(authenticatedClient) {
 		console.log('Dropbox authenticated');
 	} else {
@@ -247,25 +214,42 @@ function disconnectDropbox() {
 	dropboxClient.signOut();
 }
 
+// Called upon the successful authentication from Dropbox or
+// Google Drive, initiates our first itemMirror object
+function constructIMObject(store) {
+	im = new ItemMirror("Thisisastring", function(error, newMirror) {
+		if(error) {
+			console.log(error);
+		} else {
+			im = newMirror; // Here is our new itemMirror object
+
+			// This next block skips directly into our selected
+			// store, or else we would be displaying them again.
+      if(store) {
+      	associations = im.listAssociations();
+      	for(var i =0; i < associations.length; i++) {
+      		var displayText = im.getAssociationDisplayText(associations[i]);
+      		if(displayText == store) {
+      			navigateMirror(associations[i]);
+      		}
+      	}
+      } else {
+      	refreshIMDisplay();
+      }
+		}
+	});
+}
+
+
+
 // Deletes all elements in the display, then populates the list with paragraphs for each
 // association (WiP).
 function refreshIMDisplay() {
 
-	// Hides the jumbotron if we are already connected to Dropbox
+	// Hides the jumbotron if we are already authenticated
 	if(getClient()) {
 		$(".jumbotron").hide();
 	}
-
-    // Save the rootMirror lastvisited fragment
-    //rootMirror.setFragmentNamespaceAttribute('lastVisited', im.getURIforItemDescribed(), 'folder-docs');
-    //console.log("after set: " + rootMirror.getFragmentNamespaceAttribute('lastVisited', 'folder-docs'));
-    // rootMirror.save(function(error) {
-    //     if(error) {
-    //         console.log('Save Error: ' + error);
-    //     } else {
-    //         console.log('Successfully saved.');
-    //     }
-    // });
 
 	var entryDisplayName;
 	$("#groupingItems").empty();
@@ -295,6 +279,8 @@ function refreshIMDisplay() {
 	createClickHandlers();
 }
 
+// Handles the ordering of the associations (folders), allowing for
+// the saving and ordering of individual associations
 function orderAssociations(associationList) {
 	var orderedItems = [];
 	var nonOrderedItems = [];
@@ -313,6 +299,7 @@ function orderAssociations(associationList) {
 	return nonOrderedItems.concat(orderedItems);
 }
 
+// Prints all the associations to the screen
 function printAssociations(associationList, div) {
 	for(var i = 0; i < associationList.length; i++) {
 		var originalDisplayText = im.getAssociationDisplayText(associationList[i]);
@@ -331,19 +318,6 @@ function createClickHandlers() {
 		var element = $(this);
 		textboxHandler(element);
   });
-
-	// $('.assoc-textbox').keypress(function (e) {
-	// 	if(e.which == 13) {
-	// 		var element = $(this);
-	// 		textboxHandler(element);
-	// 	}
-	// });
-
-	// $('.assoc-textbox').live('keyup', function(e) {
-	// 	var guid = $(this).attr('id');
-	// 	var newText = $(this).val();
-	// 	$("div[data-guid='" + guid + "'] .assoc-displaytext").html(marked(newText));
-	// });
 
     $('.glyphicon-folder-open').on('click', function(e) {
         var guid = $(this).attr("data-guid");
@@ -554,11 +528,11 @@ function associationMarkup(guid) {
 	var displayTextWithMarkdown = marked(originalDisplayText);
 	var functionCall = "navigateMirror(" + guid + ")";
 	var markup = "<div data-guid='" + guid + "' class='row association-row context-menu-one'>" +
-	
+
   // drag icon column
-  "<div class='col-xs-1'>" + 
+  "<div class='col-xs-1'>" +
   "<div class='sortingHandle'><span class='glyphicon glyphicon-sort' /></div>" +
-  "</div>" + 
+  "</div>" +
 
   // content column
   "<div class='col-xs-10'>" +
@@ -578,34 +552,3 @@ function associationMarkup(guid) {
 	return markup;
 
 }
-
-jQuery.fn.putCursorAtEnd = function() {
-
-  return this.each(function() {
-
-    $(this).focus()
-
-    // If this function exists...
-    if (this.setSelectionRange) {
-      // ... then use it (Doesn't work in IE)
-
-      // Double the length because Opera is inconsistent about whether a carriage return is one character or two. Sigh.
-      var len = $(this).val().length * 2;
-
-      this.setSelectionRange(len, len);
-
-    } else {
-    // ... otherwise replace the contents with itself
-    // (Doesn't work in Google Chrome)
-
-      $(this).val($(this).val());
-
-    }
-
-    // Scroll to the bottom, in case we're in a tall textarea
-    // (Necessary for Firefox and Google Chrome)
-    this.scrollTop = 999999;
-
-  });
-
-};
