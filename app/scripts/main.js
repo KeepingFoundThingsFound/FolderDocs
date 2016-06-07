@@ -261,20 +261,20 @@ function refreshIMDisplay() {
 	associations = im.listAssociations();
 	var length = associations.length;
 
-	// Grab associations and organize them by type
-	var groupingItems = [];
-	var nonGroupingItems = [];
-	for(var i = 0; i < length; i++) {
-		if(im.isAssociationAssociatedItemGrouping(associations[i])) {
-			groupingItems.push(associations[i]);
-		} else {
-			nonGroupingItems.push(associations[i]);
-		}
-	}
+	// // Grab associations and organize them by type
+	// var groupingItems = [];
+	// var nonGroupingItems = [];
+	// for(var i = 0; i < length; i++) {
+	// 	if(im.isAssociationAssociatedItemGrouping(associations[i])) {
+	// 		groupingItems.push(associations[i]);
+	// 	} else {
+	// 		nonGroupingItems.push(associations[i]);
+	// 	}
+	// }
 
 	// Prints out items in alphabetical order
-	printAssociations(orderAssociations(groupingItems), $("#groupingItems"));
-	printAssociations(nonGroupingItems.sort(), $("#nonGroupingItems"));
+	printAssociations(orderAssociations(associations), $("#groupingItems"));
+	// printAssociations(nonGroupingItems.sort(), $("#nonGroupingItems"));
 
 	createClickHandlers();
 }
@@ -285,16 +285,30 @@ function orderAssociations(associationList) {
 	var orderedItems = [];
 	var nonOrderedItems = [];
 
-	for(var i = 0; i < associationList.length; i++) {
-		var guid = associationList[i];
-		var placement = im.getAssociationNamespaceAttribute('order', guid, 'folder-docs');
-		if(placement) {
-			orderedItems[placement] = guid;
-		} else {
-			nonOrderedItems.push(guid);
-		}
-	}
-
+  // Check if this fragment has sorting, or if we should default set it
+	var hasSorting = im.getFragmentNamespaceAttribute('sorting', 'folder-docs-sorting');
+  if(hasSorting == 'true') {
+  	for(var i = 0; i < associationList.length; i++) {
+  		var guid = associationList[i];
+  		var placement = im.getAssociationNamespaceAttribute('order', guid, 'folder-docs');
+  		if(placement) {
+  			orderedItems[placement] = guid;
+  		} else {
+  			nonOrderedItems.push(guid);
+  		}
+  	}
+  } else {
+    // Grab associations and organize them by type
+    var groupingItems = [];
+    var nonGroupingItems = [];
+    for(var i = 0; i < associationList.length; i++) {
+    	if(im.isAssociationAssociatedItemGrouping(associationList[i])) {
+    		nonOrderedItems.push(associationList[i]);
+    	} else {
+    		orderedItems.push(associationList[i]);
+    	}
+    }
+  }
 	// Return an array of unorderedItems + orderedItems (in that order)
 	return nonOrderedItems.concat(orderedItems);
 }
@@ -523,6 +537,10 @@ function saveOrder() {
 			}
 		}
 	}
+
+	// Save a boolean to say that this itemMirror has sorting now.
+	im.setFragmentNamespaceAttribute('sorting', 'true', 'folder-docs-sorting');
+
 	// After we've set all the proper namespace attributes, let's save the itemMirror
 	saveMirror();
 }
@@ -551,7 +569,7 @@ function associationMarkup(guid) {
 	if(im.isAssociationAssociatedItemGrouping(guid)) {
 		markup += "<span data-guid='" + guid + "' class='association association-grouping glyphicon glyphicon-folder-open'></span></div>";
 	} else {
-		markup += "<span class='association association-file glyphicon glyphicon-file'></span></div>";
+		markup += "<span data-guid='" + guid + "' class='association association-file glyphicon glyphicon-file'></span></div>";
 	}
 
 
