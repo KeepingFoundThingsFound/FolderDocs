@@ -360,8 +360,7 @@ function handleDisplaytextClicks() {
 			timer = setTimeout(function() {
 				// Single click case
 				clicks = 0; // reset counter
-				// If element has been selected already, open edit box
-				if(alreadySelected) { editboxAssociation(element); }
+
 			}, DELAY);
 		// If element is a grouping item
 		} else if(im.isAssociationAssociatedItemGrouping(element.attr('data-guid'))) {
@@ -380,9 +379,15 @@ function handleDisplaytextClicks() {
 // Selects an itemMirror associaton
 function selectAssociation(element) {
 	if(selectedAssociation) {
-		selectedAssociation.removeClass('selected-association');
-	}
+    // Remove the contenteditable from the previous association
+    var guid = selectedAssociation.attr('data-guid');
+    $(".contenteditable[data-guid='" + guid + "']").prop('contenteditable', 'false');
+    selectedAssociation.removeClass('selected-association');
+  }
 	element.addClass('selected-association');
+  // Now we need to make this one contenteditable
+  var guid = element.attr('data-guid');
+  $(".contenteditable[data-guid='" + guid + "']").prop('contenteditable', 'true');
 	selectedAssociation = element;
 }
 
@@ -390,15 +395,16 @@ function selectAssociation(element) {
 // by saving the guid as the currently selected guid and highlights
 // the association in view by placing a border around it.
 function editboxAssociation(element) {
-	if(element.hasClass('selected-association')) {
-		// The clicked element is the currently selected element, let's
-		// toggle into edit
+  alert('second click');
+	// if(element.hasClass('selected-association')) {
+	// 	// The clicked element is the currently selected element, let's
+	// 	// toggle into edit
 		var guid = element.attr('data-guid');
 		//var textbox = $('#' + guid);
 		$(".contenteditable[data-guid='" + guid + "']").prop('contenteditable', 'true');
 		// textbox.show();
 		// textbox.putCursorAtEnd();
-	}
+	//}
 }
 
 
