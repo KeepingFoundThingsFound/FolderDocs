@@ -92,70 +92,109 @@ $(document).ready(function() {
         });
     }
 
-	// //initialize context menu
-	// $.contextMenu({
-  //           selector: '.context-menu-one',
-  //           items: {
-  //               "edit": {
-  //               	name: "Edit DisplayText",
-  //               	callback: function(e) {
-  //               		var element = $(this);
-  //               		selectAssociation(element);
-  //               		editboxAssociation(element);
-  //               	}
-  //               },
-  //               "open": {
-  //               	name: "Open Subfolder",
-  //               	callback: function(e) {
-  //               		var elementGUID = $(this).attr('data-guid');
-  //               		if(im.isAssociationAssociatedItemGrouping(elementGUID)) {
-  //               			navigateMirror(elementGUID);
-  //               		}
-  //               	},
-  //               	// Disabled if the element is a non-grouping item
-  //               	disabled: function() {return !im.isAssociationAssociatedItemGrouping($(this).attr('data-guid')); }
-  //               },
-  //               "copy" : {
-  //               	name: "Copy",
-  //               	disabled: true
-  //               },
-  //               "moveUp": {
-  //               	name: "Move Assocition Up",
-  //               	callback: function(e) {
-  //               		var element = $(this);
-  //               		element.prev().before(element);
-  //               		saveOrder();
-  //               	},
-  //               	// Disabled if there is no element before it in the list or if it is a non-grouping item
-  //               	disabled: function() {return (!$(this).prev()[0] ||
-  //               		!im.isAssociationAssociatedItemGrouping($(this).attr('data-guid'))); }
-  //               },
-  //               "moveDown": {
-  //               	name: "Move Association Down",
-  //               	callback: function(e) {
-  //               		var element = $(this);
-  //               		element.next().after(element);
-  //               		saveOrder();
-  //               	},
-  //               	// Disabled if there is no element after it in the list or if it is a non-grouping item
-  //               	disabled: function() {return (!$(this).next()[0] ||
-  //               		!im.isAssociationAssociatedItemGrouping($(this).attr('data-guid'))); }
-  //               },
-  //               "delete": {
-  //               	name: "Delete",
-  //               	disabled: true
-  //               },
-  //               "sep1": "----------",
-  //               "openInCloud": {
-  //               	name: "Open in Cloud Store",
-  //               	callback: function(e) {
-  //                       var elementGUID = $(this).attr("data-guid");
-  //                       var url = im.getPublicURL(elementGUID);
-  //                       window.open(url);
-  //                   }
-  //               }
-  //           }
-  //       });
+	//initialize context menu
+	$.contextMenu({
+            selector: '.context-menu-one',
+            items: {
+                "edit": {
+                	name: "Edit DisplayText",
+                	callback: function(e) {
+                		var element = $(this);
+                		selectAssociation(element);
+                	},
+									icon: function(opt, $itemElement, itemKey, item){
+											// Set the content to the menu trigger selector and add an bootstrap icon to the item.
+											$itemElement.html('<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit displaytext' + opt.selector);
+
+											// Add the context-menu-icon-updated class to the item
+											return 'context-menu-icon-updated';
+									},
+                },
+                "open": {
+                	name: "Open Subfolder",
+                	callback: function(e) {
+                		var elementGUID = $(this).attr('data-guid');
+                		if(im.isAssociationAssociatedItemGrouping(elementGUID)) {
+                			navigateMirror(elementGUID);
+                		}
+                	},
+									icon: function(opt, $itemElement, itemKey, item){
+											// Set the content to the menu trigger selector and add an bootstrap icon to the item.
+											$itemElement.html('<span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> Open folder' + opt.selector);
+
+											// Add the context-menu-icon-updated class to the item
+											return 'context-menu-icon-updated';
+									},
+                	// Disabled if the element is a non-grouping item
+                	disabled: function() {return !im.isAssociationAssociatedItemGrouping($(this).attr('data-guid')); }
+                },
+                "copy" : {
+                	name: "Copy",
+                	disabled: true,
+									icon: function(opt, $itemElement, itemKey, item){
+											// Set the content to the menu trigger selector and add an bootstrap icon to the item.
+											$itemElement.html('<span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copy' + opt.selector);
+
+											// Add the context-menu-icon-updated class to the item
+											return 'context-menu-icon-updated';
+									},
+                },
+                "moveUp": {
+                	name: "Move Association Up",
+                	callback: function(e) {
+                		var element = $(this);
+                		element.prev().before(element);
+                		saveOrder();
+                	},
+									icon: function(opt, $itemElement, itemKey, item){
+											// Set the content to the menu trigger selector and add an bootstrap icon to the item.
+											$itemElement.html('<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span> Move up' + opt.selector);
+
+											// Add the context-menu-icon-updated class to the item
+											return 'context-menu-icon-updated';
+									},
+                	// Disabled if there is no element before it in the list or if it is a non-grouping item
+                	disabled: function() {return (!$(this).prev()[0]); }
+                },
+                "moveDown": {
+                	name: "Move Association Down",
+                	callback: function(e) {
+                		var element = $(this);
+                		element.next().after(element);
+                		saveOrder();
+                	},
+									icon: function(opt, $itemElement, itemKey, item){
+											// Set the content to the menu trigger selector and add an bootstrap icon to the item.
+											$itemElement.html('<span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span> Move down' + opt.selector);
+
+											// Add the context-menu-icon-updated class to the item
+											return 'context-menu-icon-updated';
+									},
+                	// Disabled if there is no element after it in the list or if it is a non-grouping item
+                	disabled: function() {return (!$(this).next()[0]); }
+                },
+                "delete": {
+                	name: "Delete",
+                	disabled: true,
+									icon: function(opt, $itemElement, itemKey, item){
+											// Set the content to the menu trigger selector and add an bootstrap icon to the item.
+											$itemElement.html('<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete' + opt.selector);
+
+											// Add the context-menu-icon-updated class to the item
+											return 'context-menu-icon-updated';
+									},
+                },
+                "sep1": "----------",
+                "openInCloud": {
+                	name: "Open in Cloud Store",
+                	callback: function(e) {
+                        var elementGUID = $(this).attr("data-guid");
+                        var url = im.getPublicURL(elementGUID);
+                        window.open(url);
+                    }
+                }
+            }
+        });
 });
 
 /****************************
